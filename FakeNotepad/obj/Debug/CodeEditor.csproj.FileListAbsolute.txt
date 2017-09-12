@@ -1,0 +1,11 @@
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\bin\Debug\CodeEditor.exe.config
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\bin\Debug\CodeEditor.exe
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\bin\Debug\CodeEditor.pdb
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.Form1.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.Properties.Resources.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.csproj.GenerateResource.Cache
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.exe
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.pdb
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.CodeBox.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.LineNumberText.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\CodeEditor\CodeEditor\obj\Debug\CodeEditor.csprojResolveAssemblyReference.cache

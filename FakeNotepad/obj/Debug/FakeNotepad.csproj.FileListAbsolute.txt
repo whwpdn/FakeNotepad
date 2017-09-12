@@ -1,0 +1,11 @@
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\bin\Debug\FakeNotepad.exe.config
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\bin\Debug\FakeNotepad.exe
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\bin\Debug\FakeNotepad.pdb
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.Form1.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.CodeBox.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.LineNumberText.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.Properties.Resources.resources
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.csproj.GenerateResource.Cache
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.exe
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.pdb
+C:\Users\MBC\Documents\Visual Studio 2013\Projects\FakeNotepad\FakeNotepad\obj\Debug\FakeNotepad.csprojResolveAssemblyReference.cache
