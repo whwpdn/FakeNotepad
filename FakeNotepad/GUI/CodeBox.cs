@@ -6,8 +6,16 @@ namespace FakeNotepad
     {
         private string mstrSpace = "";
         private string mstrFileName = "";
-        private char[] chrCheckingKeyChars = new char[] { '{', '(' };
-        private int miCurrentLineNumber = 0;
+        private char[] chrStartCheckingKey = new char[] {'{', '('};
+        //private char[] chrEndCheckingKey= new char[] {'}' , ')'};
+        private const int iTabSpaceSize = 4;
+        private bool bSkipEvent = false;
+        //shift_tab_unindent": false
+        //"tab_size": 4,
+        //"translate_tabs_to_spaces": false,
+        private bool bTranslateTabsToSpaces = true;
+        //private int miCheckingIndentionLevel=0;
+        //private int miCurrentLineNumber = 0;
         private UpdateLineNumberDelegate updateLineNumber;
         public UpdateLineNumberDelegate UpdateLineNumber
         {
@@ -46,71 +54,159 @@ namespace FakeNotepad
 
         private void TextChangedEvent(object sender, System.EventArgs e)
         {
-
             AutoIndention();
-            
-            //int iCurCol = this.SelectionStart - GetLineNumber(this.SelectionStart);
-            //if (iCurCol == 1)
-            //    updateLineNumber(this);
-            //if (iCurCol == 1)
-            //    updateLineNumber(this);
         }
 
         private void SelectionChangedEvent(object sender, System.EventArgs e)
         {
-           //System.Drawing.Point pt = this.GetPositionFromCharIndex(this.SelectionStart);
             int iCurLine = GetLineNumber();
-            int iCurCol = this.SelectionStart - this.GetFirstCharIndexFromLine(iCurLine);
+            int iCurCol = GetColumnIndex();
             updateCurLoc(++iCurLine, ++iCurCol);
-
-            
+                        
             updateLineNumber(this);
+        }
 
+        //////////////////////////////
+        ///////////////// override functions
+        //////////////////////////////
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (bTranslateTabsToSpaces)
+            {
+                if (keyData == Keys.Tab)
+                {
+                    this.SelectionLength = 0;
+                    int numSpaces = iTabSpaceSize - ((this.SelectionStart - this.GetFirstCharIndexOfCurrentLine()) % iTabSpaceSize);
+                    this.SelectedText = new string(' ', numSpaces);
+                    return true;
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
+            //base.OnKeyDown(e);
 
             if (e.KeyCode.Equals(Keys.Enter))
             {
-                mstrSpace = GetWhiteSpaceFromCurrentLine();
+                int iCheckingIndentionLevel = GetWhiteSpaceFromCurrentLine();
+                iCheckingIndentionLevel += IsExistCheckingKeyChars();
+
+                for (int i = 0; i < iCheckingIndentionLevel; i++)
+                {
+                    if (bTranslateTabsToSpaces)
+                    {
+                        mstrSpace+=' ';
+                    }
+                    else
+                    {
+                        mstrSpace += "\t";
+                    }
+                }
+
+            }
+            else if (e.KeyCode.Equals(Keys.OemCloseBrackets) )
+            {
+                // ignore selection change
+                bSkipEvent = true;
+
+                int lastSelection = this.SelectionStart;
+                this.Text = this.Text.Remove(this.Text.Length - iTabSpaceSize);
+                this.SelectionStart = lastSelection + mstrSpace.Length;
+
+                bSkipEvent = false;
             }
 
         }
-        private int getWidth()
+
+        protected override void OnSelectionChanged(System.EventArgs e)
         {
-            int iWidth = 25;
-            // get total lines of richTextBox
-            int iLine = this.Lines.Length;
-
-            if (iLine <= 99)
-            {
-                iWidth = 20 + (int)this.Font.Size;
-            }
-            else if (iLine <= 999)
-            {
-                iWidth = 30 + (int)this.Font.Size;
-            }
-            else
-            {
-                iWidth = 50 + (int)this.Font.Size;
-            }
-
-            return iWidth;
+            // ignore selection change
+            if(!bSkipEvent)
+                base.OnSelectionChanged(e);
         }
+
+
+        ///////////////////////////////////
+        /////////////// private functions
+        //////////////////////////////
+
+        private int IsExistCheckingKeyChars()
+        {
+            
+            char ch = GetChar();
+            for(int i =0;i<chrStartCheckingKey.Length; i++)
+            {
+                if (chrStartCheckingKey[i] == ch)
+                {
+                    int iLevel = 0;
+                    iLevel++;
+                    if (bTranslateTabsToSpaces) return iLevel * iTabSpaceSize;
+                    else                        return iLevel ;
+                }
+                    
+            }
+
+            //for(int i=0;i<chrEndCheckingKey.Length; i++)
+            //{
+            //    if (chrEndCheckingKey[i] == ch)
+            //    {
+            //        int iLevel = 0;
+            //        iLevel--;
+            //        if (bTranslateTabsToSpaces) return iLevel * iTabSpaceSize;
+            //        else return iLevel;
+            //    }
+                    
+            //}
+            return 0;
+        }
+
         private void AutoIndention()
         {
             if (mstrSpace.Length > 0)
             {
+                // ignore selection change
+                bSkipEvent = true;
+
                 int lastSelection = this.SelectionStart;
-                //this.Text = Text.Insert(lastSelection, mstrSpace);
-                this.Text += mstrSpace;
-                string test = this.SelectedText;
+                this.Text = Text.Insert(lastSelection, mstrSpace);
+                //this.Text += mstrSpace;
+                //string test = this.SelectedText;
                 this.SelectionStart = lastSelection + mstrSpace.Length;
                 mstrSpace = string.Empty;
+
+                bSkipEvent = false;
             }
             
+        }
+
+
+        private int GetColumnIndex()
+        {
+            // get Current Column Index
+            int iCurCol = this.SelectionStart -
+                this.GetFirstCharIndexFromLine(GetLineNumber());
+            return iCurCol;
+        }
+        private char GetChar()
+        {
+            // get Current position character
+            return GetChar(this.SelectionStart);
+        }
+        private char GetChar(int intCharIndex)
+        {
+            System.Drawing.Point ptCurrentCharPos; 
+            if (intCharIndex != this.TextLength)
+            {
+                ptCurrentCharPos = this.GetPositionFromCharIndex(intCharIndex-1 );
+            }
+            else
+            {
+                ptCurrentCharPos = this.GetPositionFromCharIndex(intCharIndex);
+            }
+            return this.GetCharFromPosition(ptCurrentCharPos);
         }
         private int GetLineNumber()
         {
@@ -121,27 +217,22 @@ namespace FakeNotepad
         {
             return this.GetLineFromCharIndex(intCharIndex);
         }
-
-
-      
-        private string GetWhiteSpaceFromCurrentLine()
+        private int GetWhiteSpaceFromCurrentLine()
         {
-            System.Text.StringBuilder tempstrSpace= new System.Text.StringBuilder();
-            //int lineIndex = this.GetLineFromCharIndex(this.SelectionStart) ;
+            int iCheckingIndentionLevel = 0;
             int lineIndex = GetLineNumber(this.SelectionStart);
+            char ckeckchar = ' ';
+            if (!bTranslateTabsToSpaces)
+                ckeckchar = '\t';
 
             if (this.Lines.Length > 0)
             {
                 for (int i = 0; i < this.Lines[lineIndex].Length; i++)
                 {
                     // If iterated char is equal to 
-                    if (this.Lines[lineIndex][i].Equals('\t'))
+                    if (this.Lines[lineIndex][i].Equals(ckeckchar))
                     {
-                        tempstrSpace.Append('\t');
-                    }
-                    else if (this.Lines[lineIndex][i].Equals(' '))
-                    {
-                        tempstrSpace.Append(' ');
+                        iCheckingIndentionLevel++;
                     }
                     else
                     {
@@ -149,8 +240,7 @@ namespace FakeNotepad
                     }
                 }
             }
-
-            return tempstrSpace.ToString();
+            return iCheckingIndentionLevel;
         }
 
         private void InitializeComponent()
@@ -164,14 +254,13 @@ namespace FakeNotepad
             this.Dock = DockStyle.Fill;
             //this.BorderStyle = BorderStyle.None;
             this.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-            this.SelectionIndent = 8;
+            //this.SelectionIndent = 8;
             //this.SelectionHangingIndent = 3;
             //this.SelectionRightIndent = 12;
 
             ///
             this.AcceptsTab = true;
-            base.AllowDrop = true;
-
+            //base.AllowDrop = true;
             // set event haandler
             this.VScroll += new System.EventHandler(this.VScrollEvent);
             this.TextChanged += new System.EventHandler(this.TextChangedEvent);
