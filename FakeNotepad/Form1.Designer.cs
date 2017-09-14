@@ -50,6 +50,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.AllowDrop = true;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem});
@@ -126,6 +127,7 @@
             // 
             // statusStrip
             // 
+            this.statusStrip.AllowDrop = true;
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CurrentPosition,
             this.toolStripStatusLabel2,
@@ -180,6 +182,7 @@
             // 
             // codeTabControl
             // 
+            this.codeTabControl.AllowDrop = true;
             this.codeTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.codeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.codeTabControl.Location = new System.Drawing.Point(0, 24);
@@ -198,6 +201,7 @@
             // 
             // Form1
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(677, 466);
@@ -228,14 +232,13 @@
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sizeToolStripMenuItem;
         private System.Windows.Forms.StatusStrip statusStrip;
-
-        private CodeTabControl codeTabControl;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel CurrentPosition;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem sfToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem asdfToolStripMenuItem1;
+        private CodeTabControl codeTabControl;
         
 
 

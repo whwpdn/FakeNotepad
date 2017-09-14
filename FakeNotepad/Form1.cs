@@ -17,6 +17,7 @@ namespace FakeNotepad
 {
     delegate void UpdateLineNumberDelegate(CodeBox code);
     delegate void UpdateCurrentLocation(int iLineNum, int iColNum);
+    delegate void LoadDropFiles(params string[] fileNames);
 
     public partial class Form1 : Form
     {
@@ -30,6 +31,7 @@ namespace FakeNotepad
         #endregion
         public Form1()
         {
+            
             InitializeComponent();
             Init();
         }
@@ -103,8 +105,9 @@ namespace FakeNotepad
 
             // set delegate
             newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
-            //newCodeBox.setDelegate(new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers));
             newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+
             
             e.Control.Controls.Add(newCodeBox);
             e.Control.Controls.Add(newLineNumberText);
@@ -155,10 +158,11 @@ namespace FakeNotepad
         private void AddNewTab(string filename)
         {
             CodeTabPage newTabPage = new CodeTabPage(filename);
-            //codeTabControl.TabPages.Add(filename);
-            codeTabControl.TabPages.Add(newTabPage);
+            codeTabControl.TabPages.Add(filename);
+            //codeTabControl.TabPages.Add(newTabPage);
             codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
             currentTabCode.Focus();
+          
         }
         private void SaveFile()
         {
@@ -227,6 +231,7 @@ namespace FakeNotepad
             
             }
         }
+        
         private void LoadCodeFiles(params string[] fileNames)
         {
             codeTabControl.SuspendLayout();
@@ -259,10 +264,12 @@ namespace FakeNotepad
                     //codeTabControl.TabPages.Add(strFileName);
                     int index = codeTabControl.TabPages.Count - 1;
                     CodeBox openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
+                    LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
 
                     openedCode.LoadFile(name, RichTextBoxStreamType.PlainText);
                     openedCode.FileName = name.TrimEnd();
                     openedCode.Modified = false;
+                    lineNumText.SetLineNumbers(openedCode);
                     this.Text = name;
                                            
                 }
@@ -368,6 +375,7 @@ namespace FakeNotepad
 
         private void Form1_Load(object sender, System.EventArgs e)
         {
+            //this.AllowDrop = true;
             Size mysize = new System.Drawing.Size(15, 15);
             Bitmap bt = new Bitmap(Properties.Resources.close);
             Bitmap btm = new Bitmap(bt, mysize);
@@ -376,6 +384,7 @@ namespace FakeNotepad
             codeTabControl.Padding = new Point(30);
         }
 
+    
 
     }
 }

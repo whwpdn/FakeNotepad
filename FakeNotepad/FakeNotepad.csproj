@@ -62,6 +62,9 @@
     <Compile Include="Gui\LineNumberText.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Gui\MultiPagePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -69,6 +72,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\CodeBox.resx">
       <DependentUpon>CodeBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\CodeTabControl.resx">
+      <DependentUpon>CodeTabControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\LineNumberText.resx">
       <DependentUpon>LineNumberText.cs</DependentUpon>

@@ -16,6 +16,12 @@ namespace FakeNotepad
         private bool bTranslateTabsToSpaces = true;
         //private int miCheckingIndentionLevel=0;
         //private int miCurrentLineNumber = 0;
+        private LoadDropFiles loadDropFiles;
+        public LoadDropFiles LoadDropFiles
+        {
+            get { return loadDropFiles; }
+            set { loadDropFiles = value; }
+        }
         private UpdateLineNumberDelegate updateLineNumber;
         public UpdateLineNumberDelegate UpdateLineNumber
         {
@@ -65,7 +71,20 @@ namespace FakeNotepad
                         
             updateLineNumber(this);
         }
+        private void FileDragDropEvent(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            loadDropFiles(files);
+            //foreach (string file in files) Console.WriteLine(file);
+        }
 
+        //private void Form1_DragEnter(object sender, DragEventArgs e)
+        //{
+        //    if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
+        //}
+
+
+        //}
         //////////////////////////////
         ///////////////// override functions
         //////////////////////////////
@@ -260,11 +279,12 @@ namespace FakeNotepad
 
             ///
             this.AcceptsTab = true;
-            //base.AllowDrop = true;
+            base.AllowDrop = true;
             // set event haandler
             this.VScroll += new System.EventHandler(this.VScrollEvent);
             this.TextChanged += new System.EventHandler(this.TextChangedEvent);
             this.SelectionChanged += new System.EventHandler(this.SelectionChangedEvent);
+            this.DragDrop += new DragEventHandler(this.FileDragDropEvent);
             
 
             this.ResumeLayout(false);

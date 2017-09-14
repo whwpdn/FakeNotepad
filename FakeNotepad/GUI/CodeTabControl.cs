@@ -11,16 +11,15 @@ namespace FakeNotepad
     {
         public CodeTabControl()
         {
-            this.BackColor = System.Drawing.Color.Black;
-            this.TabStop = false;
-            SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            InitializeComponent();
+
+            //this.BackColor = System.Drawing.Color.Black;        
             //Location = new System.Drawing.Point(0, 120);
             //Name = "";
             //Size = new System.Drawing.Size(200, 100);
-            SelectedIndex = 0;
-            //this.BorderStyle = BorderStyle.None;
-            this.Dock = DockStyle.Fill;
             
+            //this.BorderStyle = BorderStyle.None; 
+         
         }
 
         protected override bool ShowFocusCues
@@ -29,6 +28,14 @@ namespace FakeNotepad
             {
                 return false;
             }
+        }
+
+        private void InitializeComponent()
+        {
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.TabStop = false;
+            this.Dock = DockStyle.Fill;
+            this.SelectedIndex = 0;
         }
     //protected override void WndProc(ref Message m)
     //{
