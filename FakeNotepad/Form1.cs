@@ -8,7 +8,7 @@ using System.Collections.Generic;
 /*
  * 
  * line number 랑 본문이랑 위치 안맞는 문제 
- * file메뉴단축키,상태바, 탭 종료
+ * file메뉴단축키,상태바에 확장자,
  * edit menu
  * 
  * 
@@ -27,6 +27,7 @@ namespace FakeNotepad
         {
             get { return (CodeBox)codeTabControl.SelectedTab.Controls[0]; }
         }
+     
 
         #endregion
         public Form1()
@@ -50,6 +51,16 @@ namespace FakeNotepad
             base.OnClosing(e);
             // 종료시 처리할 것들..(저장여부 , 설정값저장등등)
         }
+        //단축키
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.W))
+            {
+                CloseSelectedTab();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
 
         // Menu Click Event
         private void newToolStripMenuItem_Click(object sender, System.EventArgs e)
@@ -60,18 +71,8 @@ namespace FakeNotepad
         private void saveToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             //CodeBox currentCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
-            if (currentTabCode.SavedOrOpened)
-            {
-                //overwrite
-                //SaveFile(currentTabCode);
-                SaveFile();
-                currentTabCode.Modified = false;
-                UpdateTabTextModifiedIndicator();
-            }
-            else
-            {
-                SaveAsFile();
-            }
+
+            SaveFile();
         }
 
         private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
@@ -131,7 +132,8 @@ namespace FakeNotepad
 
             if (imageRec.Contains(e.Location))
             {
-                codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
+                //codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
+                CloseSelectedTab();
             }
 
         }
@@ -166,18 +168,32 @@ namespace FakeNotepad
         }
         private void SaveFile()
         {
-            try
+            if (currentTabCode.SavedOrOpened)
             {
-                File.WriteAllLines(currentTabCode.FileName, currentTabCode.Lines);
+                //overwrite
+                //SaveFile(currentTabCode);
+
+                try
+                {
+                    File.WriteAllLines(currentTabCode.FileName, currentTabCode.Lines);
+                }
+                catch (System.Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+
+                }
+
+                currentTabCode.Modified = false;
+                UpdateTabTextModifiedIndicator();
             }
-            catch (System.Exception ex)
+            else
             {
-                System.Windows.Forms.MessageBox.Show(ex.Message);
+                SaveAsFile();
             }
-            finally
-            {
-               
-            }
+
         }
         private void SaveAsFile()
         {
@@ -294,12 +310,18 @@ namespace FakeNotepad
             // and the current text does not matche up  with initial text state
             if (currentTabCode.Modified)
             {
-                //if (!PromptToSave()) CleanUp();
+                DialogResult result = MessageBox.Show("has been modified, save ? ","save", MessageBoxButtons.YesNoCancel);
+                if ( result == DialogResult.Yes)
+                {
+                    SaveFile();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    return;
+                }
             }
-            else
-            {
-                RemoveTab();
-            }
+            RemoveTab();
+            
         }
         private void RemoveTab()
         {
@@ -308,9 +330,9 @@ namespace FakeNotepad
             {
              
             }
-
+            
             currentTabCode.Dispose();
-
+            //codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
             codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
             codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
         }
@@ -383,8 +405,6 @@ namespace FakeNotepad
 
             codeTabControl.Padding = new Point(30);
         }
-
-    
 
     }
 }

@@ -14,7 +14,8 @@ namespace FakeNotepad
         //"tab_size": 4,
         //"translate_tabs_to_spaces": false,
         private bool bTranslateTabsToSpaces = true;
-        //private int miCheckingIndentionLevel=0;
+        //private bool bCulyBraceAutoIndent = false;
+        private int miCheckingIndentionLevel=0;
         //private int miCurrentLineNumber = 0;
         private LoadDropFiles loadDropFiles;
         public LoadDropFiles LoadDropFiles
@@ -60,6 +61,7 @@ namespace FakeNotepad
 
         private void TextChangedEvent(object sender, System.EventArgs e)
         {
+            //bCulyBraceAutoIndent = false;
             AutoIndention();
         }
 
@@ -124,20 +126,50 @@ namespace FakeNotepad
                         mstrSpace += "\t";
                     }
                 }
+                miCheckingIndentionLevel = iCheckingIndentionLevel / iTabSpaceSize;
 
             }
             else if (e.KeyCode.Equals(Keys.OemCloseBrackets) )
             {
                 // ignore selection change
                 bSkipEvent = true;
-
-                int lastSelection = this.SelectionStart;
-                this.Text = this.Text.Remove(this.Text.Length - iTabSpaceSize);
-                this.SelectionStart = lastSelection + mstrSpace.Length;
-
+                if (miCheckingIndentionLevel > 0 && IsAutoIndentStatus())
+                {
+                   int lastSelection = this.SelectionStart;
+                    //this.Text = this.Text.Remove(this.Text.Length - iTabSpaceSize ,);
+                    this.Text = this.Text.Remove(lastSelection - iTabSpaceSize, iTabSpaceSize);
+                    this.SelectionStart = lastSelection - iTabSpaceSize;// +mstrSpace.Length;
+                    //miCheckingIndentionLevel--;
+                }
                 bSkipEvent = false;
             }
 
+        }
+        private bool IsAutoIndentStatus()
+        {
+            
+            int lastSelection = this.SelectionStart;
+            int iCurrentIdx = this.SelectionStart - this.GetFirstCharIndexFromLine(GetLineNumber());
+            string[] tmpStringArray = this.Lines;
+            string currentLineString = tmpStringArray[GetLineNumber()].Trim('\n');
+
+
+            //if (iCurrentIdx < currentLineString.Length) return false;
+            if (iCurrentIdx < (miCheckingIndentionLevel * iTabSpaceSize)) return false;
+            
+            for (int i = 0; i < currentLineString.Length; i++)
+            {
+                //iIndentLevel++;
+                if (currentLineString[i] != ' ')
+                {
+                    return false;
+                }
+
+            }
+             
+            //if (miCheckingIndentionLevel != (iIndentLevel / 4)) return false;
+            
+            return true;
         }
 
         protected override void OnSelectionChanged(System.EventArgs e)
@@ -197,6 +229,7 @@ namespace FakeNotepad
                 mstrSpace = string.Empty;
 
                 bSkipEvent = false;
+                //bCulyBraceAutoIndent = true;
             }
             
         }
