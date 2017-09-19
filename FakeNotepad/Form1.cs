@@ -109,6 +109,7 @@ namespace FakeNotepad
             newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
             newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
 
+            newCodeBox.TextChanged += CodeBox_TextChanged;
             
             e.Control.Controls.Add(newCodeBox);
             e.Control.Controls.Add(newLineNumberText);
@@ -147,7 +148,11 @@ namespace FakeNotepad
         {
             SaveAsFile();
         }
-
+        private void CodeBox_TextChanged(object sender, System.EventArgs e)
+        {
+            //UpdateAllInfo();
+            UpdateRedoUndoMenuItems();
+        }
 
 
 
@@ -404,7 +409,48 @@ namespace FakeNotepad
             closeImage = btm;
 
             codeTabControl.Padding = new Point(30);
+            UpdateRedoUndoMenuItems();
         }
 
+        private void undoToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if (currentTabCode.Focused)
+            {
+                currentTabCode.CodeUndo();
+
+                UpdateRedoUndoMenuItems();
+            }
+            else
+            {
+                UserControl userControl = this.ActiveControl as UserControl;
+
+                if (userControl != null)
+                {
+                    TextBox textBox = userControl.ActiveControl as TextBox;
+                    if (textBox != null) textBox.Undo();
+                }
+                else
+                {
+                    TextBox textBox = this.ActiveControl as TextBox;
+                    if (textBox != null) textBox.Undo();
+                }
+            }
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if (currentTabCode.Focused)
+            {
+                currentTabCode.CodeRedo();
+                UpdateRedoUndoMenuItems();
+            }
+        }
+        private void UpdateRedoUndoMenuItems()
+        {
+            //undoToolStripMenuItem.Enabled = currentTabCode.CanUndo;
+
+            undoToolStripMenuItem.Enabled = currentTabCode.canUndo();
+            redoToolStripMenuItem.Enabled = currentTabCode.canRedo();
+        }
     }
 }

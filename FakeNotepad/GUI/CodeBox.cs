@@ -4,6 +4,8 @@ namespace FakeNotepad
 {
     class CodeBox : System.Windows.Forms.RichTextBox
     {
+        private TextUndoRedo mUndoRedo;
+        //private int miUndoCount =0;
         private string mstrSpace = "";
         private string mstrFileName = "";
         private char[] chrStartCheckingKey = new char[] {'{', '('};
@@ -48,11 +50,36 @@ namespace FakeNotepad
         
         public CodeBox()
         {
-            
             InitializeComponent();
             this.BorderStyle = BorderStyle.None;
+            mUndoRedo = new TextUndoRedo();
+            
         }
+        public void CodeUndo(){
+            bSkipEvent = true;
+            this.Text = this.mUndoRedo.Undo();
+            this.SelectionStart = this.Text.Length;
+            bSkipEvent = false;
+        }
+        public void CodeRedo(){
+            bSkipEvent = true;
+            string strRedo = this.mUndoRedo.Redo();
+            if (strRedo != null)
+            {
+                this.Text = strRedo;
+                this.SelectionStart = this.Text.Length;
+            }
+            bSkipEvent = false;
 
+        }
+        public bool canUndo()
+        {
+            return mUndoRedo.CanUndo();
+        }
+        public bool canRedo()
+        {
+            return mUndoRedo.CanRedo();
+        }
         // event functions
         private void VScrollEvent(object sender, System.EventArgs e)
         {
@@ -62,7 +89,9 @@ namespace FakeNotepad
         private void TextChangedEvent(object sender, System.EventArgs e)
         {
             //bCulyBraceAutoIndent = false;
+
             AutoIndention();
+            mUndoRedo.Save(this.Text);
         }
 
         private void SelectionChangedEvent(object sender, System.EventArgs e)
@@ -178,7 +207,12 @@ namespace FakeNotepad
             if(!bSkipEvent)
                 base.OnSelectionChanged(e);
         }
-
+        protected override void OnTextChanged(System.EventArgs e)
+        {
+            // ignore selection change
+            if (!bSkipEvent)
+                base.OnTextChanged(e);
+        }
 
         ///////////////////////////////////
         /////////////// private functions

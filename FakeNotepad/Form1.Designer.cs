@@ -44,6 +44,8 @@
             this.sfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.codeTabControl = new FakeNotepad.CodeTabControl();
+            this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
@@ -116,6 +118,8 @@
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.undoToolStripMenuItem,
+            this.redoToolStripMenuItem,
             this.sizeToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
             this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
@@ -124,7 +128,7 @@
             // sizeToolStripMenuItem
             // 
             this.sizeToolStripMenuItem.Name = "sizeToolStripMenuItem";
-            this.sizeToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
+            this.sizeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.sizeToolStripMenuItem.Text = "Size";
             // 
             // statusStrip
@@ -201,6 +205,23 @@
             this.codeTabControl.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.codeTabControl_ControlAdded);
             this.codeTabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.codeTabControl_MouseClick);
             // 
+            // undoToolStripMenuItem
+            // 
+            this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.undoToolStripMenuItem.Text = "Undo";
+            this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
+            // 
+            // redoToolStripMenuItem
+            // 
+            this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.redoToolStripMenuItem.Text = "Redo";
+            this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -241,6 +262,8 @@
         private System.Windows.Forms.ToolStripMenuItem sfToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem asdfToolStripMenuItem1;
         private CodeTabControl codeTabControl;
+        private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         
 
 
