@@ -19,7 +19,7 @@ namespace FakeNotepad
             //Size = new System.Drawing.Size(200, 100);
             
             //this.BorderStyle = BorderStyle.None; 
-         
+           
         }
 
         protected override bool ShowFocusCues
@@ -32,10 +32,23 @@ namespace FakeNotepad
 
         private void InitializeComponent()
         {
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            //this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            this.SuspendLayout();
             this.TabStop = false;
             this.Dock = DockStyle.Fill;
+            this.AllowDrop = true;
+            this.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            this.Location = new System.Drawing.Point(0, 0);
+            this.Margin = new System.Windows.Forms.Padding(0);
+            this.Multiline = true;
+            this.Name = "codeTabControl";
+            this.Padding = new System.Drawing.Point(0, 0);
             this.SelectedIndex = 0;
+            this.Size = new System.Drawing.Size(564, 418);
+            this.TabIndex = 1;
+            this.ResumeLayout(false);
+
+
         }
     //protected override void WndProc(ref Message m)
     //{

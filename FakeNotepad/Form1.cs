@@ -43,6 +43,7 @@ namespace FakeNotepad
              
             // add controls
             //codeTabControl.TabPages.Add("untitled");
+            codeTabControl.BringToFront();
             AddNewTab("untitled");
         }
 

@@ -15,7 +15,9 @@ namespace FakeNotepad
             this.BorderStyle = BorderStyle.None;
             this.Width = 0;
             this.Height = 0;
-            
+            this.Padding = new System.Windows.Forms.Padding(0);
+            this.Margin = new System.Windows.Forms.Padding(0);
+
             //this.Fo = false;            
             //Location = new System.Drawing.Point(0, 0);
             //Name = "tabPage1";
