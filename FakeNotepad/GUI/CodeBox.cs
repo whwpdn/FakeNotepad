@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
 namespace FakeNotepad
 {
     class CodeBox : System.Windows.Forms.RichTextBox
@@ -104,8 +105,23 @@ namespace FakeNotepad
         }
         private void FileDragDropEvent(object sender, DragEventArgs e)
         {
+
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            loadDropFiles(files);
+            foreach (string aFile in files)
+            {
+                FileAttributes attr = File.GetAttributes(aFile );
+                if (attr.HasFlag(FileAttributes.Directory))// if true , dir\
+                {
+
+                }
+                else
+                {
+                    loadDropFiles(aFile);
+                }
+            }
+
+
+            
             //foreach (string file in files) Console.WriteLine(file);
         }
 

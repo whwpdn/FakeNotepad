@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
+
 //using System.Windows.Forms;
 
 
@@ -40,7 +41,7 @@ namespace FakeNotepad
         private void Init()
         {
             // create instance
-             
+       
             // add controls
             //codeTabControl.TabPages.Add("untitled");
             codeTabControl.BringToFront();
@@ -452,6 +453,42 @@ namespace FakeNotepad
 
             undoToolStripMenuItem.Enabled = currentTabCode.canUndo();
             redoToolStripMenuItem.Enabled = currentTabCode.canRedo();
+        }
+
+        private void hIdeSideBarToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            if(hIdeSideBarToolStripMenuItem.Checked)
+            {
+                //dirTree.Hide();
+                //splitContainer1.Panel1.Hide();
+                hIdeSideBarToolStripMenuItem.Text = "show side bar";
+                //this.splitContainer1.SplitterDistance = 0;
+                this.splitContainer1.Panel1Collapsed = true;
+            }
+            
+            else
+            {
+                //dirTree.Show();
+                //splitContainer1.Panel1.Show();
+                hIdeSideBarToolStripMenuItem.Text = "hide side bar";
+                //this.splitContainer1.SplitterDistance = dirTree.Width;
+                this.splitContainer1.Panel1Collapsed = false;
+
+            }
+            this.Invalidate();
+        }
+
+        private void openFolderToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            using (var dlgOpenFolder = new FolderBrowserDialog())
+            {
+                if (dlgOpenFolder.ShowDialog() == DialogResult.OK)
+                {
+                    dirTree.SetData(dlgOpenFolder.SelectedPath);
+                //    LoadCodeFiles(dlgOpenFile.FileNames);
+                }
+            }
+         
         }
     }
 }

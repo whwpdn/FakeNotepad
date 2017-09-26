@@ -28,13 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("aefe");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("123wefe");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("asdf", new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2});
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("test", new System.Windows.Forms.TreeNode[] {
-            treeNode3});
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,6 +39,8 @@
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.hIdeSideBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.CurrentPosition = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -53,10 +48,9 @@
             this.sfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.dirTreePanel1 = new FakeNotepad.DirTreeView();
+            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dirTree = new FakeNotepad.DirTreeView();
             this.codeTabControl = new FakeNotepad.CodeTabControl();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.hIdeSideBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -83,6 +77,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.openFolderToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
@@ -164,6 +159,23 @@
             this.sizeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.sizeToolStripMenuItem.Text = "Size";
             // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hIdeSideBarToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // hIdeSideBarToolStripMenuItem
+            // 
+            this.hIdeSideBarToolStripMenuItem.CheckOnClick = true;
+            this.hIdeSideBarToolStripMenuItem.Name = "hIdeSideBarToolStripMenuItem";
+            this.hIdeSideBarToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.K)));
+            this.hIdeSideBarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.hIdeSideBarToolStripMenuItem.Text = "Hide SideBar";
+            this.hIdeSideBarToolStripMenuItem.Click += new System.EventHandler(this.hIdeSideBarToolStripMenuItem_Click);
+            // 
             // statusStrip
             // 
             this.statusStrip.AllowDrop = true;
@@ -221,7 +233,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.AllowDrop = true;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(0);
             this.splitContainer1.Name = "splitContainer1";
@@ -230,38 +242,41 @@
             // 
             this.splitContainer1.Panel1.AllowDrop = true;
             this.splitContainer1.Panel1.AutoScroll = true;
-            this.splitContainer1.Panel1.Controls.Add(this.dirTreePanel1);
+            this.splitContainer1.Panel1.Controls.Add(this.dirTree);
+            this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.splitContainer1.Panel1MinSize = 1;
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.AllowDrop = true;
             this.splitContainer1.Panel2.Controls.Add(this.codeTabControl);
+            this.splitContainer1.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.splitContainer1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer1.Size = new System.Drawing.Size(677, 418);
             this.splitContainer1.SplitterDistance = 112;
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 4;
             // 
-            // dirTreePanel1
+            // openFolderToolStripMenuItem
             // 
-            this.dirTreePanel1.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.dirTreePanel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.dirTreePanel1.CausesValidation = false;
-            this.dirTreePanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dirTreePanel1.Indent = 10;
-            this.dirTreePanel1.Location = new System.Drawing.Point(0, 0);
-            this.dirTreePanel1.Name = "dirTreePanel1";
-            treeNode1.Name = "101";
-            treeNode1.Text = "aefe";
-            treeNode2.Name = "";
-            treeNode2.Text = "123wefe";
-            treeNode3.Name = "";
-            treeNode3.Text = "asdf";
-            treeNode4.Name = "";
-            treeNode4.Text = "test";
-            this.dirTreePanel1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode4});
-            this.dirTreePanel1.Size = new System.Drawing.Size(112, 418);
-            this.dirTreePanel1.TabIndex = 3;
+            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
+            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openFolderToolStripMenuItem.Text = "Open Folder";
+            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
+            // 
+            // dirTree
+            // 
+            this.dirTree.AllowDrop = true;
+            this.dirTree.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.dirTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dirTree.CausesValidation = false;
+            this.dirTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dirTree.Indent = 10;
+            this.dirTree.Location = new System.Drawing.Point(0, 0);
+            this.dirTree.Name = "dirTree";
+           
+            this.dirTree.Size = new System.Drawing.Size(112, 418);
+            this.dirTree.TabIndex = 3;
             // 
             // codeTabControl
             // 
@@ -281,20 +296,6 @@
             this.codeTabControl.TabIndexChanged += new System.EventHandler(this.codeTabControl_TabIndexChanged);
             this.codeTabControl.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.codeTabControl_ControlAdded);
             this.codeTabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.codeTabControl_MouseClick);
-            // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hIdeSideBarToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(45, 20);
-            this.viewToolStripMenuItem.Text = "View";
-            // 
-            // hIdeSideBarToolStripMenuItem
-            // 
-            this.hIdeSideBarToolStripMenuItem.Name = "hIdeSideBarToolStripMenuItem";
-            this.hIdeSideBarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.hIdeSideBarToolStripMenuItem.Text = "HIde SideBar";
             // 
             // Form1
             // 
@@ -342,10 +343,11 @@
         private CodeTabControl codeTabControl;
         private System.Windows.Forms.ToolStripMenuItem undoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
-        private DirTreeView dirTreePanel1;
+        private DirTreeView dirTree;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hIdeSideBarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
         
 
 
