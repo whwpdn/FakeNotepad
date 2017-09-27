@@ -32,6 +32,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,7 +49,6 @@
             this.sfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dirTree = new FakeNotepad.DirTreeView();
             this.codeTabControl = new FakeNotepad.CodeTabControl();
             this.menuStrip1.SuspendLayout();
@@ -101,6 +101,13 @@
             this.openToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // openFolderToolStripMenuItem
+            // 
+            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
+            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openFolderToolStripMenuItem.Text = "Open Folder";
+            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -257,13 +264,6 @@
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 4;
             // 
-            // openFolderToolStripMenuItem
-            // 
-            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
-            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.openFolderToolStripMenuItem.Text = "Open Folder";
-            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
-            // 
             // dirTree
             // 
             this.dirTree.AllowDrop = true;
@@ -274,7 +274,6 @@
             this.dirTree.Indent = 10;
             this.dirTree.Location = new System.Drawing.Point(0, 0);
             this.dirTree.Name = "dirTree";
-           
             this.dirTree.Size = new System.Drawing.Size(112, 418);
             this.dirTree.TabIndex = 3;
             // 

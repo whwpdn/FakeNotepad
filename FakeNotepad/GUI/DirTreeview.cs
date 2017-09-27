@@ -35,15 +35,22 @@ namespace FakeNotepad
         
         public void SetData(string path)
         {
-            ListDirectory(this, path);
+            FileAttributes attr = File.GetAttributes(path);
+            if (attr.HasFlag(FileAttributes.Directory))// if true , dir\
+                ListDirectory(path);
         }
 
+        private void ListDirectory(string path)
+        {
+            //treeView.Nodes.Clear();
+            ListDirectory(this, path);
+        }
         private void ListDirectory(TreeView treeView, string path)
         {
             //treeView.Nodes.Clear();
-            
+           
             var rootDirectoryInfo = new DirectoryInfo(path);
-            bool test = treeView.Nodes.ContainsKey(rootDirectoryInfo.FullName);
+            //bool test = treeView.Nodes.ContainsKey(rootDirectoryInfo.FullName);
             if (!treeView.Nodes.ContainsKey(rootDirectoryInfo.FullName))
                 treeView.Nodes.Add(CreateDirectoryNode(rootDirectoryInfo)); // recursive call
         }
@@ -67,20 +74,83 @@ namespace FakeNotepad
             // DirTreeView
             // 
             this.AllowDrop = true;
-            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            //this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Dock = System.Windows.Forms.DockStyle.Left;
+            //this.Dock = System.Windows.Forms.DockStyle.Left;
             this.Indent = 8;
             this.LineColor = System.Drawing.Color.Black;
-            this.Name = "treeView1";
-            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DirTreeView_DragDrop);
+            //this.Name = "treeView1";
+            //this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DirTreeView_DragDrop);
+            //this.DragEnter += new System.Windows.Forms.DragEventHandler(this.DirTreeView_DragEnter);
             this.ResumeLayout(false);
 
         }
 
-        private void DirTreeView_DragDrop(object sender, DragEventArgs e)
+        protected override void OnDragDrop(DragEventArgs drgevent)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[] files = (string[])drgevent.Data.GetData(DataFormats.FileDrop);
+
+            if (drgevent.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])(drgevent.Data.GetData(DataFormats.FileDrop));
+                foreach (string fileLoc in filePaths)
+                {
+                    FileAttributes attr = File.GetAttributes(fileLoc);
+                    if (attr.HasFlag(FileAttributes.Directory))// if true , dir\
+                        ListDirectory(fileLoc);
+                }
+            }
+
+            base.OnDragDrop(drgevent);
         }
+
+        protected override void OnDragEnter(DragEventArgs drgevent)
+        {
+            if (drgevent.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                drgevent.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                drgevent.Effect = DragDropEffects.None;
+            }
+
+ 	        base.OnDragEnter(drgevent);
+        }
+
+        //private void DirTreeView_DragDrop(object sender, DragEventArgs e)
+        //{
+        //    string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        //    if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        //    {
+        //        string[] filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
+        //        foreach (string fileLoc in filePaths)
+        //        {
+
+        //            ListDirectory(fileLoc);
+        //            //// Code to read the contents of the text file
+        //            //if (File.Exists(fileLoc))
+        //            //{
+        //            //    using (TextReader tr = new StreamReader(fileLoc))
+        //            //    {
+        //            //        MessageBox.Show(tr.ReadToEnd());
+        //            //    }
+        //            //}
+
+        //        }
+        //    }
+        //}
+
+        //private void DirTreeView_DragEnter(object sender, DragEventArgs e)
+        //{
+        //    if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        //    {
+        //        e.Effect = DragDropEffects.Copy;
+        //    }
+        //    else
+        //    {
+        //        e.Effect = DragDropEffects.None;
+        //    }
+        //}
     }
 }

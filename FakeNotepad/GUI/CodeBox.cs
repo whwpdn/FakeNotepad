@@ -103,13 +103,12 @@ namespace FakeNotepad
                         
             updateLineNumber(this);
         }
-        private void FileDragDropEvent(object sender, DragEventArgs e)
+        protected override void OnDragDrop(DragEventArgs drgevent)
         {
-
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string[] files = (string[])drgevent.Data.GetData(DataFormats.FileDrop);
             foreach (string aFile in files)
             {
-                FileAttributes attr = File.GetAttributes(aFile );
+                FileAttributes attr = File.GetAttributes(aFile);
                 if (attr.HasFlag(FileAttributes.Directory))// if true , dir\
                 {
 
@@ -120,11 +119,9 @@ namespace FakeNotepad
                 }
             }
 
-
-            
-            //foreach (string file in files) Console.WriteLine(file);
+            base.OnDragDrop(drgevent);
         }
-
+ 
         //private void Form1_DragEnter(object sender, DragEventArgs e)
         //{
         //    if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effect = DragDropEffects.Copy;
@@ -367,7 +364,7 @@ namespace FakeNotepad
             this.VScroll += new System.EventHandler(this.VScrollEvent);
             this.TextChanged += new System.EventHandler(this.TextChangedEvent);
             this.SelectionChanged += new System.EventHandler(this.SelectionChangedEvent);
-            this.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+            //this.DragDrop += new DragEventHandler(this.FileDragDropEvent);
             
 
             this.ResumeLayout(false);

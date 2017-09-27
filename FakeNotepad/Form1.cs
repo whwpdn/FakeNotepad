@@ -112,7 +112,7 @@ namespace FakeNotepad
             newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
 
             newCodeBox.TextChanged += CodeBox_TextChanged;
-            
+            newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
             e.Control.Controls.Add(newCodeBox);
             e.Control.Controls.Add(newLineNumberText);
             e.Control.Width = 0;
@@ -457,25 +457,8 @@ namespace FakeNotepad
 
         private void hIdeSideBarToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            if(hIdeSideBarToolStripMenuItem.Checked)
-            {
-                //dirTree.Hide();
-                //splitContainer1.Panel1.Hide();
-                hIdeSideBarToolStripMenuItem.Text = "show side bar";
-                //this.splitContainer1.SplitterDistance = 0;
-                this.splitContainer1.Panel1Collapsed = true;
-            }
-            
-            else
-            {
-                //dirTree.Show();
-                //splitContainer1.Panel1.Show();
-                hIdeSideBarToolStripMenuItem.Text = "hide side bar";
-                //this.splitContainer1.SplitterDistance = dirTree.Width;
-                this.splitContainer1.Panel1Collapsed = false;
 
-            }
-            this.Invalidate();
+            ShowHideSideBar();
         }
 
         private void openFolderToolStripMenuItem_Click(object sender, System.EventArgs e)
@@ -489,6 +472,44 @@ namespace FakeNotepad
                 }
             }
          
+        }
+
+        private void ShowHideSideBar()
+        {
+            if (hIdeSideBarToolStripMenuItem.Checked)
+            {
+                hIdeSideBarToolStripMenuItem.Text = "show side bar";
+                this.splitContainer1.Panel1Collapsed = true;
+            }
+            else
+            {
+                hIdeSideBarToolStripMenuItem.Text = "hide side bar";
+                this.splitContainer1.Panel1Collapsed = false;
+            }
+            this.Invalidate();
+        }
+        private void FileDragDropEvent(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (string aFile in files)
+            {
+                FileAttributes attr = File.GetAttributes(aFile);
+                if (attr.HasFlag(FileAttributes.Directory))// if true , dir\
+                {
+                    if (hIdeSideBarToolStripMenuItem.Checked)
+                    {
+                        hIdeSideBarToolStripMenuItem.Checked = false;
+                        ShowHideSideBar();
+                    }
+                    this.dirTree.SetData(aFile);
+                }
+                else
+                {
+                    //LoadCodeFiles(dlgOpenFile.FileNames);
+                    // load file
+                }
+            }
+            
         }
     }
 }
