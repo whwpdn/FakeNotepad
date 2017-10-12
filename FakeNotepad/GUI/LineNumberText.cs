@@ -19,6 +19,7 @@ namespace FakeNotepad
             InitializeComponent();
             this.BorderStyle = BorderStyle.None;
             this.currentCodeBox = curCodeBox;
+            //SetFontHeight();
         }
 
         // public 
@@ -62,8 +63,9 @@ namespace FakeNotepad
 
             for (int i = iFirstLine; i <= iLastLine; i++)
             {
-                Text += i + 1 + "\n";
+                Text += i + 1 +"\n";
             }
+
         }
         private void AddLineNumber(int iLineNum, int iWidth)
         {
@@ -109,14 +111,13 @@ namespace FakeNotepad
             // 
             // LineNumberText
             // 
+            this.BackColor = System.Drawing.Color.White;
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Margin = new System.Windows.Forms.Padding(0);
             this.ReadOnly = true;
+            this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.TabStop = false;
-            this.BackColor = Color.White;
-            
-            this.Dock = DockStyle.Left;
-            //this.Enabled = false;
-            this.ScrollBars = RichTextBoxScrollBars.None;
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MouseDownEvent);
             this.ResumeLayout(false);
 

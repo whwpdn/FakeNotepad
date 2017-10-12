@@ -11,7 +11,7 @@ using System.Collections.Generic;
  * line number 랑 본문이랑 위치 안맞는 문제 
  * file메뉴단축키,상태바에 확장자,
  * edit menu
- * 
+ * line number update
  * 
  */
 namespace FakeNotepad
@@ -23,6 +23,7 @@ namespace FakeNotepad
     public partial class Form1 : Form
     {
         private Image closeImage;
+        private CodeTabPage tempTabPage;
         #region Properties
         private CodeBox currentTabCode
         {
@@ -46,6 +47,26 @@ namespace FakeNotepad
             //codeTabControl.TabPages.Add("untitled");
             codeTabControl.BringToFront();
             AddNewTab("untitled");
+
+            tempTabPage = new CodeTabPage("temp",true);
+
+
+            // init temp tab page 
+            CodeBox newCodeBox = new CodeBox();
+            LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
+
+            // set delegate
+            newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
+            newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+
+            newCodeBox.TextChanged += CodeBox_TextChanged;
+            newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+
+            tempTabPage.Controls.Add(newCodeBox);
+            tempTabPage.Controls.Add(newLineNumberText);
+            //codeTabControl.TabPages.Add(tempTabPage);
+     
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -102,6 +123,14 @@ namespace FakeNotepad
                 UpdateControlAbilitys();
             }
 
+            if (e.Control == tempTabPage)
+            {
+                
+                tempTabPage.Controls[0].Focus();
+                return;
+            }
+                
+
             //Setup CodeBox control
             CodeBox newCodeBox = new CodeBox();
             LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
@@ -118,7 +147,6 @@ namespace FakeNotepad
             e.Control.Width = 0;
             e.Control.Height = 0;
 
-            // first call 
             newLineNumberText.SetLineNumbers(newCodeBox);
         }
 
@@ -164,13 +192,16 @@ namespace FakeNotepad
             this.CurrentPosition.Text = string.Format("Line {0}, Column {1}", iLineNum, iColumnNum);
         }
 
-        private void AddNewTab(string filename)
+        private CodeTabPage AddNewTab(string filename)
         {
             CodeTabPage newTabPage = new CodeTabPage(filename);
-            codeTabControl.TabPages.Add(filename);
+            //codeTabControl.TabPages.Add(filename);
             //codeTabControl.TabPages.Add(newTabPage);
+            codeTabControl.TabPages.Add(newTabPage);
             codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
             currentTabCode.Focus();
+
+            return newTabPage;
           
         }
         private void SaveFile()
@@ -258,22 +289,40 @@ namespace FakeNotepad
         private void LoadCodeFiles(params string[] fileNames)
         {
             codeTabControl.SuspendLayout();
-            LoadIntoSeparateTabs(fileNames);
-            
-            //UpdateAllInfo();
-            codeTabControl.ResumeLayout();
-        }
-        private void LoadIntoSeparateTabs(IEnumerable<string> fileNames)
-        {
-            //bool isOneFileAlreadyOpen = false;
-
             foreach (string name in fileNames)
             {
                 if (name.Length == 0)
                 {
                     AddNewTab("untitled");
                     continue;
-                  }
+                }
+                string strFileName = Path.GetFileName(name);
+                CodeTabPage AddedPage = AddNewTab(strFileName);
+                LoadIntoSeparateTabs(name, (CodeBox)AddedPage.Controls[0]);
+            }
+            
+            
+            //UpdateAllInfo();
+            codeTabControl.ResumeLayout();
+        }
+        
+        private void LoadIntoTempTab(string fileName)
+        {
+
+        }
+
+        //private void LoadIntoSeparateTabs(IEnumerable<string> fileNames, CodeBox openedCode)
+        private void LoadIntoSeparateTabs(string name, CodeBox openedCode)
+        {
+            //bool isOneFileAlreadyOpen = false;
+
+            //foreach (string name in fileNames)
+            //{
+            //    if (name.Length == 0)
+            //    {
+            //        AddNewTab("untitled");
+            //        continue;
+            //      }
 
                 // If user decides not to load big file
                 //if (!LoadLargeFile(name)) continue;
@@ -283,17 +332,17 @@ namespace FakeNotepad
                 try
                 {
                     string strFileName = Path.GetFileName(name);
-                    AddNewTab(strFileName);
+                    
                     //codeTabControl.TabPages.Add(strFileName);
-                    int index = codeTabControl.TabPages.Count - 1;
-                    CodeBox openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
+                    //int index = codeTabControl.TabPages.Count - 1;
+                    //openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
                     LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
-
+                    //openedCode.Focus();
                     openedCode.LoadFile(name, RichTextBoxStreamType.PlainText);
                     openedCode.FileName = name.TrimEnd();
                     openedCode.Modified = false;
                     lineNumText.SetLineNumbers(openedCode);
-                    this.Text = name;
+                    this.Text = strFileName;
                                            
                 }
                 catch (System.Exception ex)
@@ -302,7 +351,7 @@ namespace FakeNotepad
                     CloseSelectedTab();
                     MessageBox.Show(ex.Message);
                 }
-            }
+            //}
 
             //if (!hasOneFileAlreadyOpen)
             //{
@@ -311,6 +360,7 @@ namespace FakeNotepad
 
             //UpdateAllInfo();
         }
+
         private void CloseSelectedTab()
         {
             // A save prompt will only popup when document has been modified
@@ -510,6 +560,83 @@ namespace FakeNotepad
                 }
             }
             
+        }
+
+        private void dirTree_Click(object sender, TreeNodeMouseClickEventArgs e )
+        {
+            string filePath = (string)e.Node.Tag;// +"\\" + e.Node.Text;
+            FileAttributes attr = File.GetAttributes(filePath);
+            if (!attr.HasFlag(FileAttributes.Directory))// if true , dir\
+            {
+                tempTabPage.Controls[0].Focus();
+                
+                LoadIntoSeparateTabs(filePath, (CodeBox)tempTabPage.Controls[0]); //AddNewTab(filePath);
+                
+                ((LineNumberText)tempTabPage.Controls[1]).SetLineNumbers((CodeBox)tempTabPage.Controls[0]);
+                if (!codeTabControl.Contains(tempTabPage))
+                {
+                    codeTabControl.TabPages.Add(tempTabPage);
+                    codeTabControl.SelectTab((TabPage)tempTabPage); // 탭페이지 선택되도록 수정
+                }
+                else
+                {
+                    codeTabControl.SelectTab((TabPage)tempTabPage); 
+                }
+                    
+                
+                //codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
+                
+                //
+                //tempTabPage.BringToFront();
+            }
+            
+             
+            
+        }
+
+        private void dirTree_DoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            //e.Data.GetData(DataFormats.FileDrop);
+            //e.Node.Parent.Text;
+
+            //string test = GetRootPathFromTree(e.Node);
+            string filePath = (string)e.Node.Tag;// +"\\" + e.Node.Text;
+
+            FileAttributes attr = File.GetAttributes(filePath);
+            if (!attr.HasFlag(FileAttributes.Directory))// if true , dir\
+                LoadCodeFiles(filePath); //AddNewTab(filePath);
+        }
+        //private string GetRootPathFromTree(TreeNode node)
+        //{
+
+        //    string path = node.Text;
+        //    if(node.Parent != null)
+        //    {
+        //        path = GetRootPathFromTree(node.Parent) + "\\"+path;
+        //    }
+            
+        //    return path;
+
+        //}
+        private void testMenuToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            //codeTabControl.SelectedTab.Visible = false;
+            int idx = codeTabControl.SelectedIndex;
+            //codeTabControl.Controls.RemoveAt(idx);
+
+            codeTabControl.Controls.Add(tempTabPage);
+            tempTabPage.Controls[0].Invalidate();
+            tempTabPage.Controls[0].Focus();
+         
+
+        }
+
+        private void testMenu2ToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            int idx = codeTabControl.SelectedIndex;
+            codeTabControl.Controls.RemoveAt(idx);
+
+           
         }
     }
 }

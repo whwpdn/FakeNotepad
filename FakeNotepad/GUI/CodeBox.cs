@@ -54,6 +54,9 @@ namespace FakeNotepad
             InitializeComponent();
             this.BorderStyle = BorderStyle.None;
             mUndoRedo = new TextUndoRedo();
+
+           // SetFontHeight();
+           
             
         }
         public void CodeUndo(){
@@ -103,6 +106,9 @@ namespace FakeNotepad
                         
             updateLineNumber(this);
         }
+
+       
+
         protected override void OnDragDrop(DragEventArgs drgevent)
         {
             string[] files = (string[])drgevent.Data.GetData(DataFormats.FileDrop);
@@ -230,7 +236,13 @@ namespace FakeNotepad
         ///////////////////////////////////
         /////////////// private functions
         //////////////////////////////
+        private void SetFontHeight()
+        {
+            System.Drawing.Font f = this.Font;
+            // Shrink the font for minor compensation
+            this.Font = new System.Drawing.Font(f.FontFamily, f.Size - 0.09f, f.Style);
 
+        }
         private int IsExistCheckingKeyChars()
         {
             
@@ -348,25 +360,15 @@ namespace FakeNotepad
             // 
             // CodeBox
             // 
-
-            // style
-            this.Dock = DockStyle.Fill;
-            //this.BorderStyle = BorderStyle.None;
-            this.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-            //this.SelectionIndent = 8;
-            //this.SelectionHangingIndent = 3;
-            //this.SelectionRightIndent = 12;
-
-            ///
             this.AcceptsTab = true;
-            base.AllowDrop = true;
-            // set event haandler
+            this.AllowDrop = true;
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Margin = new System.Windows.Forms.Padding(0);
+            this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
+            this.SelectionChanged += new System.EventHandler(this.SelectionChangedEvent);
             this.VScroll += new System.EventHandler(this.VScrollEvent);
             this.TextChanged += new System.EventHandler(this.TextChangedEvent);
-            this.SelectionChanged += new System.EventHandler(this.SelectionChangedEvent);
-            //this.DragDrop += new DragEventHandler(this.FileDragDropEvent);
-            
-
             this.ResumeLayout(false);
 
         }

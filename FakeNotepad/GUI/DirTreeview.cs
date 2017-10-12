@@ -51,6 +51,7 @@ namespace FakeNotepad
            
             var rootDirectoryInfo = new DirectoryInfo(path);
             //bool test = treeView.Nodes.ContainsKey(rootDirectoryInfo.FullName);
+            // root path
             if (!treeView.Nodes.ContainsKey(rootDirectoryInfo.FullName))
                 treeView.Nodes.Add(CreateDirectoryNode(rootDirectoryInfo)); // recursive call
         }
@@ -59,11 +60,20 @@ namespace FakeNotepad
         {
 
             var directoryNode = new TreeNode(directoryInfo.Name);
-            foreach (var directory in directoryInfo.GetDirectories())
+            foreach (var directory in directoryInfo.GetDirectories())   // add dir node
                 directoryNode.Nodes.Add(CreateDirectoryNode(directory));
-            foreach (var file in directoryInfo.GetFiles())
-                directoryNode.Nodes.Add(new TreeNode(file.Name));
+            foreach (var file in directoryInfo.GetFiles())      // add file node
+            {
+                TreeNode fileNode = new TreeNode(file.Name);
+                //fileNode.Tag = Path.GetFullPath(file.Name);
+                fileNode.Tag = directoryInfo.FullName +"\\"+ file.Name;
+                //directoryNode.Nodes.Add(new TreeNode(file.Name));
+                directoryNode.Nodes.Add(fileNode);
+            }
+                
+            
             directoryNode.Name = directoryInfo.FullName;
+            directoryNode.Tag = directoryInfo.FullName;
             return directoryNode;
         }
 
@@ -116,6 +126,16 @@ namespace FakeNotepad
             }
 
  	        base.OnDragEnter(drgevent);
+        }
+
+        protected override void OnClick(EventArgs e)
+        {
+            base.OnClick(e);
+        }
+
+        protected override void OnDoubleClick(EventArgs e)
+        {
+            base.OnDoubleClick(e);
         }
 
         //private void DirTreeView_DragDrop(object sender, DragEventArgs e)

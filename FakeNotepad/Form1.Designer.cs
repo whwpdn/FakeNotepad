@@ -241,6 +241,7 @@
             // splitContainer1
             // 
             this.splitContainer1.AllowDrop = true;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(0);
             this.splitContainer1.Name = "splitContainer1";
@@ -276,6 +277,8 @@
             this.dirTree.Name = "dirTree";
             this.dirTree.Size = new System.Drawing.Size(112, 418);
             this.dirTree.TabIndex = 3;
+            this.dirTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.dirTree_Click);
+            this.dirTree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.dirTree_DoubleClick);
             // 
             // codeTabControl
             // 
