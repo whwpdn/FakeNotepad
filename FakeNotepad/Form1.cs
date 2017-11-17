@@ -8,22 +8,20 @@ using System.Collections.Generic;
 
 /*
  * 
- * line number 랑 본문이랑 위치 안맞는 문제 
  * file메뉴단축키,상태바에 확장자,
  * edit menu
- * line number update
  * 
  */
 namespace FakeNotepad
 {
-    delegate void UpdateLineNumberDelegate(CodeBox code);
+    //delegate void UpdateLineNumberDelegate(CodeBox code);
     delegate void UpdateCurrentLocation(int iLineNum, int iColNum);
     delegate void LoadDropFiles(params string[] fileNames);
 
     public partial class Form1 : Form
     {
         private Image closeImage;
-        private CodeTabPage tempTabPage;
+        private CodeTabPage tempTabPage = null;
         #region Properties
         private CodeBox currentTabCode
         {
@@ -47,24 +45,28 @@ namespace FakeNotepad
             //codeTabControl.TabPages.Add("untitled");
             codeTabControl.BringToFront();
             AddNewTab("untitled");
-
+            //this.codeBox1.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
             tempTabPage = new CodeTabPage("temp",true);
-
+            ((CodeBox)tempTabPage.Controls[0]).UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            tempTabPage.Controls[0].DragDrop += new DragEventHandler(this.FileDragDropEvent);
 
             // init temp tab page 
-            CodeBox newCodeBox = new CodeBox();
-            LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
-
+            //CodeBox newCodeBox = new CodeBox();
+            //LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
+            //LineNumbers.LineNumbers_For_RichTextBox lineNumberRTB = new LineNumbers.LineNumbers_For_RichTextBox();
+            //lineNumberRTB.ParentRichTextBox = newCodeBox;
             // set delegate
-            newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
-            newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
-            newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+            //newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
+            //newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            
+            //newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+            
+            //newCodeBox.TextChanged += CodeBox_TextChanged;
+            //newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
 
-            newCodeBox.TextChanged += CodeBox_TextChanged;
-            newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
-
-            tempTabPage.Controls.Add(newCodeBox);
-            tempTabPage.Controls.Add(newLineNumberText);
+            //tempTabPage.Controls.Add(newCodeBox);
+            //tempTabPage.Controls.Add(newLineNumberText);
+            //tempTabPage.Controls.Add(lineNumberRTB);
             //codeTabControl.TabPages.Add(tempTabPage);
      
         }
@@ -120,7 +122,7 @@ namespace FakeNotepad
         {
             if (codeTabControl.TabCount.Equals(1))
             {
-                UpdateControlAbilitys();
+                //UpdateControlAbilitys();
             }
 
             if (e.Control == tempTabPage)
@@ -132,22 +134,24 @@ namespace FakeNotepad
                 
 
             //Setup CodeBox control
-            CodeBox newCodeBox = new CodeBox();
-            LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
-
+            //CodeBox newCodeBox = new CodeBox();
+            //LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
+            //LineNumbers.LineNumbers_For_RichTextBox lineNumberRTB = new LineNumbers.LineNumbers_For_RichTextBox();
+            //lineNumberRTB.ParentRichTextBox = newCodeBox;
             // set delegate
-            newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
-            newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
-            newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+            //newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
+            //newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            //newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
 
-            newCodeBox.TextChanged += CodeBox_TextChanged;
-            newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
-            e.Control.Controls.Add(newCodeBox);
-            e.Control.Controls.Add(newLineNumberText);
+            //newCodeBox.TextChanged += CodeBox_TextChanged;
+            //newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+            //e.Control.Controls.Add(newCodeBox);
+            //e.Control.Controls.Add(newLineNumberText);
+            //e.Control.Controls.Add(lineNumberRTB);
             e.Control.Width = 0;
             e.Control.Height = 0;
 
-            newLineNumberText.SetLineNumbers(newCodeBox);
+            //newLineNumberText.SetLineNumbers(newCodeBox);
         }
 
         private void codeTabControl_MouseClick(object sender, MouseEventArgs e)
@@ -199,6 +203,8 @@ namespace FakeNotepad
             //codeTabControl.TabPages.Add(newTabPage);
             codeTabControl.TabPages.Add(newTabPage);
             codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
+            currentTabCode.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            currentTabCode.DragDrop += new DragEventHandler(this.FileDragDropEvent);
             currentTabCode.Focus();
 
             return newTabPage;
@@ -336,13 +342,15 @@ namespace FakeNotepad
                     //codeTabControl.TabPages.Add(strFileName);
                     //int index = codeTabControl.TabPages.Count - 1;
                     //openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
-                    LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
-                    //openedCode.Focus();
+                    //LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
+                    //LineNumbers.LineNumbers_For_RichTextBox lineRTB = new LineNumbers.LineNumbers_For_RichTextBox();
+                    //lineRTB.ParentRichTextBox = openedCode;
+                    openedCode.Focus();
                     openedCode.LoadFile(name, RichTextBoxStreamType.PlainText);
                     openedCode.FileName = name.TrimEnd();
                     openedCode.Modified = false;
-                    lineNumText.SetLineNumbers(openedCode);
-                    this.Text = strFileName;
+                    //lineNumText.SetLineNumbers(openedCode);
+                    this.Text = name;
                                            
                 }
                 catch (System.Exception ex)
@@ -408,49 +416,29 @@ namespace FakeNotepad
                 codeTabControl.SelectedTab.Text = title;
             }
         }
-        private void UpdateControlAbilitys()
-        {
-            //    bool isEnabled = (tabControl.TabCount > 0);
-            //    tsmiEdit.Enabled = tsmiWordWrap.Enabled = isEnabled;
-            //    tsmiFind.Enabled = tsmiGoto.Enabled = isEnabled;
-            //    tsmiReplace.Enabled = tsmiInsert.Enabled = isEnabled;
-            //    tsmiFindNext.Enabled = isEnabled;
-            //    tsmiSaveAs.Enabled = tsmiSave.Enabled = isEnabled;
-            //    tsmiShortDateTime.Enabled = tsmiLongDateTime.Enabled = isEnabled;
-            //    tsmiPageSetup.Enabled = tsmiPrint.Enabled = isEnabled;
-            //    tsmiPrintPreview.Enabled = tsmiCloseTab.Enabled = isEnabled;
-            //    tsmiCloseAllTabs.Enabled = tsmiCloseAllButCurrent.Enabled = isEnabled;
-            //    tsmiCloseAndDelete.Enabled = tsmiSelectAll.Enabled = isEnabled;
-            //    tsmiDocumentInfo.Enabled = tsmiReadingWindow.Enabled = isEnabled;
+       
+        //private void codeTabControl_DrawItem(object sender, DrawItemEventArgs e)
+        //{
+        //    // tabpage close image 
+        //    Rectangle rect = codeTabControl.GetTabRect(e.Index);
+        //    Rectangle imageRec = new Rectangle(
+        //        rect.Right - closeImage.Width,
+        //        rect.Top + (rect.Height - closeImage.Height) / 2,
+        //        closeImage.Width,
+        //        closeImage.Height);
+        //    // size rect
+        //    rect.Size = new Size(rect.Width + 24, 38);
+        //    Brush br = Brushes.Black;
+        //    StringFormat strF = new StringFormat(StringFormat.GenericDefault);
+        //    e.Graphics.DrawImage(closeImage, imageRec);
+        //    SizeF sz = e.Graphics.MeasureString(codeTabControl.TabPages[e.Index].Text, e.Font);
+        //    // tab text
+        //    e.Graphics.DrawString(
+        //        codeTabControl.TabPages[e.Index].Text,
+        //        e.Font, Brushes.Black, e.Bounds.Left+(e.Bounds.Width - sz.Width) / 5,
+        //        e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
 
-            //    if (!isEnabled)
-            //    {
-            //        tsmiUndo.Enabled = tsmiRedo.Enabled = false;
-            //    }
-        }
-
-        private void codeTabControl_DrawItem(object sender, DrawItemEventArgs e)
-        {
-            // tabpage close image 
-            Rectangle rect = codeTabControl.GetTabRect(e.Index);
-            Rectangle imageRec = new Rectangle(
-                rect.Right - closeImage.Width,
-                rect.Top + (rect.Height - closeImage.Height) / 2,
-                closeImage.Width,
-                closeImage.Height);
-            // size rect
-            rect.Size = new Size(rect.Width + 24, 38);
-            Brush br = Brushes.Black;
-            StringFormat strF = new StringFormat(StringFormat.GenericDefault);
-            e.Graphics.DrawImage(closeImage, imageRec);
-            SizeF sz = e.Graphics.MeasureString(codeTabControl.TabPages[e.Index].Text, e.Font);
-            // tab text
-            e.Graphics.DrawString(
-                codeTabControl.TabPages[e.Index].Text,
-                e.Font, Brushes.Black, e.Bounds.Left+(e.Bounds.Width - sz.Width) / 5,
-                e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
-
-        }
+        //}
 
         private void Form1_Load(object sender, System.EventArgs e)
         {
@@ -569,10 +557,11 @@ namespace FakeNotepad
             if (!attr.HasFlag(FileAttributes.Directory))// if true , dir\
             {
                 tempTabPage.Controls[0].Focus();
-                
+                //tempTabPage.SetItalic(true);
+                tempTabPage.Text =  Path.GetFileName(filePath);
                 LoadIntoSeparateTabs(filePath, (CodeBox)tempTabPage.Controls[0]); //AddNewTab(filePath);
                 
-                ((LineNumberText)tempTabPage.Controls[1]).SetLineNumbers((CodeBox)tempTabPage.Controls[0]);
+                //((LineNumberText)tempTabPage.Controls[1]).SetLineNumbers((CodeBox)tempTabPage.Controls[0]);
                 if (!codeTabControl.Contains(tempTabPage))
                 {
                     codeTabControl.TabPages.Add(tempTabPage);
@@ -637,6 +626,11 @@ namespace FakeNotepad
             codeTabControl.Controls.RemoveAt(idx);
 
            
+        }
+
+        private void lineNumbers_For_RichTextBox1_Click(object sender, System.EventArgs e)
+        {
+
         }
     }
 }

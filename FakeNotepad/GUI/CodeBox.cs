@@ -26,12 +26,13 @@ namespace FakeNotepad
             get { return loadDropFiles; }
             set { loadDropFiles = value; }
         }
-        private UpdateLineNumberDelegate updateLineNumber;
-        public UpdateLineNumberDelegate UpdateLineNumber
-        {
-            get { return updateLineNumber; }
-            set { updateLineNumber = value; }
-        }
+        //private UpdateLineNumberDelegate updateLineNumber;
+    
+        //public UpdateLineNumberDelegate UpdateLineNumber
+        //{
+        //    get { return updateLineNumber; }
+        //    set { updateLineNumber = value; }
+        //}
 
         private UpdateCurrentLocation updateCurLoc;
         public UpdateCurrentLocation UpdateCurLoc
@@ -85,11 +86,6 @@ namespace FakeNotepad
             return mUndoRedo.CanRedo();
         }
         // event functions
-        private void VScrollEvent(object sender, System.EventArgs e)
-        {
-            updateLineNumber(this);
-        }
-
         private void TextChangedEvent(object sender, System.EventArgs e)
         {
             //bCulyBraceAutoIndent = false;
@@ -104,7 +100,7 @@ namespace FakeNotepad
             int iCurCol = GetColumnIndex();
             updateCurLoc(++iCurLine, ++iCurCol);
                         
-            updateLineNumber(this);
+            //updateLineNumber(this);
         }
 
        
@@ -135,9 +131,9 @@ namespace FakeNotepad
 
 
         //}
-        //////////////////////////////
-        ///////////////// override functions
-        //////////////////////////////
+        //
+        //override functions
+        //
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -233,9 +229,9 @@ namespace FakeNotepad
                 base.OnTextChanged(e);
         }
 
-        ///////////////////////////////////
-        /////////////// private functions
-        //////////////////////////////
+        //
+        //private functions
+        //
         private void SetFontHeight()
         {
             System.Drawing.Font f = this.Font;
@@ -363,11 +359,11 @@ namespace FakeNotepad
             this.AcceptsTab = true;
             this.AllowDrop = true;
             this.Dock = System.Windows.Forms.DockStyle.Fill;
+            //this.Dock = System.Windows.Forms.DockStyle.Right;
             this.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(0);
             this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.ForcedVertical;
             this.SelectionChanged += new System.EventHandler(this.SelectionChangedEvent);
-            this.VScroll += new System.EventHandler(this.VScrollEvent);
             this.TextChanged += new System.EventHandler(this.TextChangedEvent);
             this.ResumeLayout(false);
 

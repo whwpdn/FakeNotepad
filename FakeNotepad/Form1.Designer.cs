@@ -294,7 +294,6 @@
             this.codeTabControl.Size = new System.Drawing.Size(564, 418);
             this.codeTabControl.TabIndex = 1;
             this.codeTabControl.TabStop = false;
-            this.codeTabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.codeTabControl_DrawItem);
             this.codeTabControl.TabIndexChanged += new System.EventHandler(this.codeTabControl_TabIndexChanged);
             this.codeTabControl.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.codeTabControl_ControlAdded);
             this.codeTabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.codeTabControl_MouseClick);
