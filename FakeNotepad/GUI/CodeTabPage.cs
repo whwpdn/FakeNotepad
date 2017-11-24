@@ -13,14 +13,26 @@ namespace FakeNotepad
         private bool bTempPage = false; // side bar에서 click 으로 load될 경우
         private LineNumbers.LineNumbers_For_RichTextBox lineNumbers_For_RichTextBox1;
         private CodeBox cb;
+        public CodeBox CodeBoxInTabPage
+        {
+            get { return this.cb; }
+        }
+
+        private string strTabPageFilePath;
+        public string TabPageFilePath
+        {
+            get { return strTabPageFilePath; }
+            //set { this.strTabPageFilePath = value; }
+        }
+
         public bool IsTempPage
         {
             get { return bTempPage; }
             set { bTempPage = value; }
         }
-        public CodeTabPage()
-        {
-        }
+
+        
+
         public CodeTabPage(string name, bool bMode = false)
         {
             InitializeComponent();
@@ -31,18 +43,29 @@ namespace FakeNotepad
             //this.Font = TabFont;
             
         }
-        //protected override bool ShowFocusCues
-        //{
-        //    get
-        //    {
-        //        return false;
-        //    }
-        //}
-        
-       
-        public void SetItalic(bool bItalic)
+
+        //private void LoadIntoSeparateTabs(string name, CodeBox openedCode)
+        public void LoadIntoSeparateTabs(string name)
         {
-           
+            try
+            {
+
+                string strFileName = System.IO.Path.GetFileName(name);
+
+                this.cb.Focus();
+                this.cb.LoadFile(name, RichTextBoxStreamType.PlainText);
+                this.cb.FileName = name.TrimEnd();
+                this.cb.Modified = false;
+                //this.Text = name;
+                this.strTabPageFilePath = name;
+
+            }
+            catch (System.Exception ex)
+            {
+                //codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
+                //CloseSelectedTab();
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void InitializeComponent()

@@ -17,11 +17,12 @@ namespace FakeNotepad
     //delegate void UpdateLineNumberDelegate(CodeBox code);
     delegate void UpdateCurrentLocation(int iLineNum, int iColNum);
     delegate void LoadDropFiles(params string[] fileNames);
+    delegate bool ClosingTabPageEvent();
 
     public partial class Form1 : Form
     {
-        private Image closeImage;
-        private CodeTabPage tempTabPage = null;
+        //private Image closeImage;
+        //private CodeTabPage tempTabPage = null;
         #region Properties
         private CodeBox currentTabCode
         {
@@ -30,6 +31,8 @@ namespace FakeNotepad
      
 
         #endregion
+        //private Gui.OpenFileList openFilesView;
+       
         public Form1()
         {
             
@@ -46,9 +49,20 @@ namespace FakeNotepad
             codeTabControl.BringToFront();
             AddNewTab("untitled");
             //this.codeBox1.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
-            tempTabPage = new CodeTabPage("temp",true);
-            ((CodeBox)tempTabPage.Controls[0]).UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
-            tempTabPage.Controls[0].DragDrop += new DragEventHandler(this.FileDragDropEvent);
+
+            //tempTabPage = new CodeTabPage("temp",true);
+            //((CodeBox)tempTabPage.Controls[0]).UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            //tempTabPage.Controls[0].DragDrop += new DragEventHandler(this.FileDragDropEvent);
+            
+            // 임시 탭 페이지 richtextbox 이벤트 등록
+            CodeBox tempCodeBox = ((CodeBox)codeTabControl.TempTabPage.Controls[0]);
+            tempCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+            tempCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+            tempCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+            // 탭 종료 델리게이트
+            codeTabControl.ClosingCodeTabPage = new ClosingTabPageEvent(this.CloseSelectedTab);
+
+            //openFileView = new Gui.OpenFileList();
 
             // init temp tab page 
             //CodeBox newCodeBox = new CodeBox();
@@ -118,60 +132,7 @@ namespace FakeNotepad
             }
         }
 
-        private void codeTabControl_ControlAdded(object sender, ControlEventArgs e)
-        {
-            if (codeTabControl.TabCount.Equals(1))
-            {
-                //UpdateControlAbilitys();
-            }
-
-            if (e.Control == tempTabPage)
-            {
-                
-                tempTabPage.Controls[0].Focus();
-                return;
-            }
-                
-
-            //Setup CodeBox control
-            //CodeBox newCodeBox = new CodeBox();
-            //LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
-            //LineNumbers.LineNumbers_For_RichTextBox lineNumberRTB = new LineNumbers.LineNumbers_For_RichTextBox();
-            //lineNumberRTB.ParentRichTextBox = newCodeBox;
-            // set delegate
-            //newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
-            //newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
-            //newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
-
-            //newCodeBox.TextChanged += CodeBox_TextChanged;
-            //newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
-            //e.Control.Controls.Add(newCodeBox);
-            //e.Control.Controls.Add(newLineNumberText);
-            //e.Control.Controls.Add(lineNumberRTB);
-            e.Control.Width = 0;
-            e.Control.Height = 0;
-
-            //newLineNumberText.SetLineNumbers(newCodeBox);
-        }
-
-        private void codeTabControl_MouseClick(object sender, MouseEventArgs e)
-        {
-            currentTabCode.Select();
-            // tab close event process
-            Rectangle rect = codeTabControl.GetTabRect(codeTabControl.SelectedIndex);
-            Rectangle imageRec = new Rectangle(
-                rect.Right - closeImage.Width,
-                rect.Top + (rect.Height - closeImage.Height) / 2,
-                closeImage.Width,
-                closeImage.Height);
-
-            if (imageRec.Contains(e.Location))
-            {
-                //codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
-                CloseSelectedTab();
-            }
-
-        }
+       
 
         private void codeTabControl_TabIndexChanged(object sender, System.EventArgs e)
         {
@@ -187,10 +148,7 @@ namespace FakeNotepad
             //UpdateAllInfo();
             UpdateRedoUndoMenuItems();
         }
-
-
-
-
+                
         private void UpdateStatusStrip(int iLineNum, int iColumnNum)
         {
             this.CurrentPosition.Text = string.Format("Line {0}, Column {1}", iLineNum, iColumnNum);
@@ -205,6 +163,7 @@ namespace FakeNotepad
             codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
             currentTabCode.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
             currentTabCode.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+            currentTabCode.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
             currentTabCode.Focus();
 
             return newTabPage;
@@ -303,73 +262,50 @@ namespace FakeNotepad
                     continue;
                 }
                 string strFileName = Path.GetFileName(name);
-                CodeTabPage AddedPage = AddNewTab(strFileName);
-                LoadIntoSeparateTabs(name, (CodeBox)AddedPage.Controls[0]);
+
+                //해당파일 열린 탭이 없는경우
+                if(!this.openFileList.OpenFiles.Contains(name))
+                {
+                    CodeTabPage AddedPage = AddNewTab(strFileName);
+                    //AddedPage.TabPageFilePath = name;
+                    AddedPage.LoadIntoSeparateTabs(name);
+                    this.Text = name;   // form title 
+
+                    this.openFileList.AddListItem(name);
+                }
+                else    // 파일이 이미 열려있는 경우
+                {
+                    // tab select
+                    CodeTabPage tabpage = FindTabPageByFilePath(name);
+                    if(tabpage != null)
+                        this.codeTabControl.SelectTab((TabPage)tabpage);
+
+                }
             }
-            
-            
             //UpdateAllInfo();
             codeTabControl.ResumeLayout();
         }
-        
-        private void LoadIntoTempTab(string fileName)
+
+        private CodeTabPage FindTabPageByFilePath(string filepath)
         {
-
-        }
-
-        //private void LoadIntoSeparateTabs(IEnumerable<string> fileNames, CodeBox openedCode)
-        private void LoadIntoSeparateTabs(string name, CodeBox openedCode)
-        {
-            //bool isOneFileAlreadyOpen = false;
-
-            //foreach (string name in fileNames)
-            //{
-            //    if (name.Length == 0)
-            //    {
-            //        AddNewTab("untitled");
-            //        continue;
-            //      }
-
-                // If user decides not to load big file
-                //if (!LoadLargeFile(name)) continue;
-                //isOneFileAlreadyOpen = IsAlreadyOpen(name);
-                //if (hasOneFileAlreadyOpen) continue;
-
-                try
+            
+            foreach (CodeTabPage e in codeTabControl.TabPages)
+            {
+                
+                if (e.CodeBoxInTabPage.FileName == filepath)    // 파일경로와 같은 탭페이지 찾기
                 {
-                    string strFileName = Path.GetFileName(name);
+                    if (e.IsTempPage) continue; // 임시탭페이지인경우 제외
+                    return e;
+                }
                     
-                    //codeTabControl.TabPages.Add(strFileName);
-                    //int index = codeTabControl.TabPages.Count - 1;
-                    //openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
-                    //LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
-                    //LineNumbers.LineNumbers_For_RichTextBox lineRTB = new LineNumbers.LineNumbers_For_RichTextBox();
-                    //lineRTB.ParentRichTextBox = openedCode;
-                    openedCode.Focus();
-                    openedCode.LoadFile(name, RichTextBoxStreamType.PlainText);
-                    openedCode.FileName = name.TrimEnd();
-                    openedCode.Modified = false;
-                    //lineNumText.SetLineNumbers(openedCode);
-                    this.Text = name;
-                                           
-                }
-                catch (System.Exception ex)
-                {
-                    codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
-                    CloseSelectedTab();
-                    MessageBox.Show(ex.Message);
-                }
-            //}
+            }
 
-            //if (!hasOneFileAlreadyOpen)
-            //{
-            //    tabControl.SelectedIndex = tabControl.TabCount - 1;
-            //}
-
-            //UpdateAllInfo();
+            return null;
+            
         }
 
-        private void CloseSelectedTab()
+
+        private bool CloseSelectedTab()
         {
             // A save prompt will only popup when document has been modified
             // and the current text does not matche up  with initial text state
@@ -382,25 +318,17 @@ namespace FakeNotepad
                 }
                 else if (result == DialogResult.Cancel)
                 {
-                    return;
+                    return false;
                 }
             }
-            RemoveTab();
-            
+
+            //RemoveTab();
+            //this.openFileList.OpenFiles.Remove(currentTabCode.FileName);
+            this.openFileList.RemoveListItem(currentTabCode.FileName);
+            return true;
         }
-        private void RemoveTab()
-        {
-            // Remove all document dependent panels before closing last tab
-            if (codeTabControl.TabCount == 1)
-            {
-             
-            }
-            
-            currentTabCode.Dispose();
-            //codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
-            codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
-            codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
-        }
+
+        
         private void UpdateTabTextModifiedIndicator()
         {
             string title = codeTabControl.SelectedTab.Text.TrimEnd('*');
@@ -417,36 +345,14 @@ namespace FakeNotepad
             }
         }
        
-        //private void codeTabControl_DrawItem(object sender, DrawItemEventArgs e)
-        //{
-        //    // tabpage close image 
-        //    Rectangle rect = codeTabControl.GetTabRect(e.Index);
-        //    Rectangle imageRec = new Rectangle(
-        //        rect.Right - closeImage.Width,
-        //        rect.Top + (rect.Height - closeImage.Height) / 2,
-        //        closeImage.Width,
-        //        closeImage.Height);
-        //    // size rect
-        //    rect.Size = new Size(rect.Width + 24, 38);
-        //    Brush br = Brushes.Black;
-        //    StringFormat strF = new StringFormat(StringFormat.GenericDefault);
-        //    e.Graphics.DrawImage(closeImage, imageRec);
-        //    SizeF sz = e.Graphics.MeasureString(codeTabControl.TabPages[e.Index].Text, e.Font);
-        //    // tab text
-        //    e.Graphics.DrawString(
-        //        codeTabControl.TabPages[e.Index].Text,
-        //        e.Font, Brushes.Black, e.Bounds.Left+(e.Bounds.Width - sz.Width) / 5,
-        //        e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
-
-        //}
-
+       
         private void Form1_Load(object sender, System.EventArgs e)
         {
             //this.AllowDrop = true;
-            Size mysize = new System.Drawing.Size(15, 15);
-            Bitmap bt = new Bitmap(Properties.Resources.close);
-            Bitmap btm = new Bitmap(bt, mysize);
-            closeImage = btm;
+            //Size mysize = new System.Drawing.Size(15, 15);
+            //Bitmap bt = new Bitmap(Properties.Resources.close);
+            //Bitmap btm = new Bitmap(bt, mysize);
+            //closeImage = btm;
 
             codeTabControl.Padding = new Point(30);
             UpdateRedoUndoMenuItems();
@@ -526,6 +432,7 @@ namespace FakeNotepad
             }
             this.Invalidate();
         }
+
         private void FileDragDropEvent(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -556,31 +463,42 @@ namespace FakeNotepad
             FileAttributes attr = File.GetAttributes(filePath);
             if (!attr.HasFlag(FileAttributes.Directory))// if true , dir\
             {
-                tempTabPage.Controls[0].Focus();
-                //tempTabPage.SetItalic(true);
-                tempTabPage.Text =  Path.GetFileName(filePath);
-                LoadIntoSeparateTabs(filePath, (CodeBox)tempTabPage.Controls[0]); //AddNewTab(filePath);
-                
-                //((LineNumberText)tempTabPage.Controls[1]).SetLineNumbers((CodeBox)tempTabPage.Controls[0]);
-                if (!codeTabControl.Contains(tempTabPage))
+                CodeTabPage tabpage= FindTabPageByFilePath(filePath);
+                if (tabpage != null)
                 {
-                    codeTabControl.TabPages.Add(tempTabPage);
-                    codeTabControl.SelectTab((TabPage)tempTabPage); // 탭페이지 선택되도록 수정
+                    this.codeTabControl.SelectTab((TabPage)tabpage);
                 }
                 else
                 {
-                    codeTabControl.SelectTab((TabPage)tempTabPage); 
+                    string fileName = Path.GetFileName(filePath);
+                    // 임시로 파일 열기
+                    CodeTabPage tempTabPage = codeTabControl.AddTempTabPage(filePath);
+                    tempTabPage.LoadIntoSeparateTabs(filePath);
+                    this.Text = filePath;   // form title
                 }
-                    
                 
+                //tempTabPage.Controls[0].Focus();
+                //tempTabPage.SetItalic(true);
+                //tempTabPage.Text =  Path.GetFileName(filePath);
+
+                //LoadIntoSeparateTabs(filePath, (CodeBox)tempTabPage.Controls[0]); //AddNewTab(filePath);
+               
+                
+                //((LineNumberText)tempTabPage.Controls[1]).SetLineNumbers((CodeBox)tempTabPage.Controls[0]);
+                //if (!codeTabControl.Contains(tempTabPage))
+                //{
+                //    codeTabControl.TabPages.Add(tempTabPage);
+                //    codeTabControl.SelectTab((TabPage)tempTabPage); // 탭페이지 선택되도록 수정
+                //}
+                //else
+                //{
+                //    codeTabControl.SelectTab((TabPage)tempTabPage); 
+                //}
                 //codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
                 
                 //
                 //tempTabPage.BringToFront();
             }
-            
-             
-            
         }
 
         private void dirTree_DoubleClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -593,8 +511,23 @@ namespace FakeNotepad
 
             FileAttributes attr = File.GetAttributes(filePath);
             if (!attr.HasFlag(FileAttributes.Directory))// if true , dir\
-                LoadCodeFiles(filePath); //AddNewTab(filePath);
+            {
+                if (codeTabControl.TempTabPage.TabPageFilePath == filePath)
+                    codeTabControl.RemoveTab(codeTabControl.TempTabPage);
+                CodeTabPage tabpage = FindTabPageByFilePath(filePath);
+                if (tabpage != null)
+                {
+                    this.codeTabControl.SelectTab((TabPage)tabpage);
+                }
+                else
+                {
+                    LoadCodeFiles(filePath); //AddNewTab(filePath);
+                }
+                
+            }
+                
         }
+
         //private string GetRootPathFromTree(TreeNode node)
         //{
 
@@ -607,30 +540,151 @@ namespace FakeNotepad
         //    return path;
 
         //}
-        private void testMenuToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-            //codeTabControl.SelectedTab.Visible = false;
-            int idx = codeTabControl.SelectedIndex;
-            //codeTabControl.Controls.RemoveAt(idx);
+        //private void testMenuToolStripMenuItem_Click(object sender, System.EventArgs e)
+        //{
+        //    //codeTabControl.SelectedTab.Visible = false;
+        //    int idx = codeTabControl.SelectedIndex;
+        //    //codeTabControl.Controls.RemoveAt(idx);
 
-            codeTabControl.Controls.Add(tempTabPage);
-            tempTabPage.Controls[0].Invalidate();
-            tempTabPage.Controls[0].Focus();
-         
+        //    codeTabControl.Controls.Add(tempTabPage);
+        //    tempTabPage.Controls[0].Invalidate();
+        //    tempTabPage.Controls[0].Focus();
+        //}
 
-        }
+        //private void testMenu2ToolStripMenuItem_Click(object sender, System.EventArgs e)
+        //{
+        //    int idx = codeTabControl.SelectedIndex;
+        //    codeTabControl.Controls.RemoveAt(idx);
+        //}
 
-        private void testMenu2ToolStripMenuItem_Click(object sender, System.EventArgs e)
-        {
-            int idx = codeTabControl.SelectedIndex;
-            codeTabControl.Controls.RemoveAt(idx);
+        //private void codeTabControl_DrawItem(object sender, DrawItemEventArgs e)
+        //{
+        //    // tabpage close image 
+        //    Rectangle rect = codeTabControl.GetTabRect(e.Index);
+        //    Rectangle imageRec = new Rectangle(
+        //        rect.Right - closeImage.Width,
+        //        rect.Top + (rect.Height - closeImage.Height) / 2,
+        //        closeImage.Width,
+        //        closeImage.Height);
+        //    // size rect
+        //    rect.Size = new Size(rect.Width + 24, 38);
+        //    Brush br = Brushes.Black;
+        //    StringFormat strF = new StringFormat(StringFormat.GenericDefault);
+        //    e.Graphics.DrawImage(closeImage, imageRec);
+        //    SizeF sz = e.Graphics.MeasureString(codeTabControl.TabPages[e.Index].Text, e.Font);
+        //    // tab text
+        //    e.Graphics.DrawString(
+        //        codeTabControl.TabPages[e.Index].Text,
+        //        e.Font, Brushes.Black, e.Bounds.Left+(e.Bounds.Width - sz.Width) / 5,
+        //        e.Bounds.Top + (e.Bounds.Height - sz.Height) / 2 + 1);
 
-           
-        }
+        //}
 
-        private void lineNumbers_For_RichTextBox1_Click(object sender, System.EventArgs e)
-        {
+        //private void LoadIntoSeparateTabs(IEnumerable<string> fileNames, CodeBox openedCode)
+        //private void LoadIntoSeparateTabs(string name, CodeBox openedCode)
+        //{
+        //    //bool isOneFileAlreadyOpen = false;
 
-        }
+        //    //foreach (string name in fileNames)
+        //    //{
+        //    //    if (name.Length == 0)
+        //    //    {
+        //    //        AddNewTab("untitled");
+        //    //        continue;
+        //    //      }
+
+        //        // If user decides not to load big file
+        //        //if (!LoadLargeFile(name)) continue;
+        //        //isOneFileAlreadyOpen = IsAlreadyOpen(name);
+        //        //if (hasOneFileAlreadyOpen) continue;
+
+        //        try
+        //        {
+        //            string strFileName = Path.GetFileName(name);
+
+        //            //codeTabControl.TabPages.Add(strFileName);
+        //            //int index = codeTabControl.TabPages.Count - 1;
+        //            //openedCode = (CodeBox)codeTabControl.SelectedTab.Controls[0];
+        //            //LineNumberText lineNumText = (LineNumberText)codeTabControl.SelectedTab.Controls[1];
+        //            //LineNumbers.LineNumbers_For_RichTextBox lineRTB = new LineNumbers.LineNumbers_For_RichTextBox();
+        //            //lineRTB.ParentRichTextBox = openedCode;
+        //            openedCode.Focus();
+        //            openedCode.LoadFile(name, RichTextBoxStreamType.PlainText);
+        //            openedCode.FileName = name.TrimEnd();
+        //            openedCode.Modified = false;
+        //            //lineNumText.SetLineNumbers(openedCode);
+        //            this.Text = name;
+
+        //        }
+        //        catch (System.Exception ex)
+        //        {
+        //            codeTabControl.SelectedIndex = codeTabControl.TabCount - 1;
+        //            CloseSelectedTab();
+        //            MessageBox.Show(ex.Message);
+        //        }
+        //    //}
+
+        //    //if (!hasOneFileAlreadyOpen)
+        //    //{
+        //    //    tabControl.SelectedIndex = tabControl.TabCount - 1;
+        //    //}
+
+        //    //UpdateAllInfo();
+        //}
+
+        //private void codeTabControl_ControlAdded(object sender, ControlEventArgs e)
+        //{
+        //    if (codeTabControl.TabCount.Equals(1))
+        //    {
+        //        //UpdateControlAbilitys();
+        //    }
+
+        //    if (e.Control == tempTabPage)
+        //    {
+
+        //        tempTabPage.Controls[0].Focus();
+        //        return;
+        //    }
+
+
+        //    //Setup CodeBox control
+        //    //CodeBox newCodeBox = new CodeBox();
+        //    //LineNumberText newLineNumberText = new LineNumberText(newCodeBox);
+        //    //LineNumbers.LineNumbers_For_RichTextBox lineNumberRTB = new LineNumbers.LineNumbers_For_RichTextBox();
+        //    //lineNumberRTB.ParentRichTextBox = newCodeBox;
+        //    // set delegate
+        //    //newCodeBox.UpdateLineNumber = new UpdateLineNumberDelegate(newLineNumberText.SetLineNumbers);
+        //    //newCodeBox.UpdateCurLoc = new UpdateCurrentLocation(this.UpdateStatusStrip);
+        //    //newCodeBox.LoadDropFiles = new LoadDropFiles(this.LoadCodeFiles);
+
+        //    //newCodeBox.TextChanged += CodeBox_TextChanged;
+        //    //newCodeBox.DragDrop += new DragEventHandler(this.FileDragDropEvent);
+        //    //e.Control.Controls.Add(newCodeBox);
+        //    //e.Control.Controls.Add(newLineNumberText);
+        //    //e.Control.Controls.Add(lineNumberRTB);
+        //    //e.Control.Width = 0;
+        //    //e.Control.Height = 0;
+
+        //    //newLineNumberText.SetLineNumbers(newCodeBox);
+        //}
+
+        //private void codeTabControl_MouseClick(object sender, MouseEventArgs e)
+        //{
+        //    currentTabCode.Select();
+        //    // tab close event process
+        //    Rectangle rect = codeTabControl.GetTabRect(codeTabControl.SelectedIndex);
+        //    Rectangle imageRec = new Rectangle(
+        //        rect.Right - closeImage.Width,
+        //        rect.Top + (rect.Height - closeImage.Height) / 2,
+        //        closeImage.Width,
+        //        closeImage.Height);
+
+        //    if (imageRec.Contains(e.Location))
+        //    {
+        //        //codeTabControl.TabPages.Remove(codeTabControl.SelectedTab);
+        //        CloseSelectedTab();
+        //    }
+
+        //}
     }
 }

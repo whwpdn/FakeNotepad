@@ -49,7 +49,9 @@
             this.sfToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.asdfToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dirTree = new FakeNotepad.DirTreeView();
+            this.openFileList = new FakeNotepad.Gui.OpenFileList();
             this.codeTabControl = new FakeNotepad.CodeTabControl();
             this.menuStrip1.SuspendLayout();
             this.statusStrip.SuspendLayout();
@@ -57,6 +59,10 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -250,7 +256,7 @@
             // 
             this.splitContainer1.Panel1.AllowDrop = true;
             this.splitContainer1.Panel1.AutoScroll = true;
-            this.splitContainer1.Panel1.Controls.Add(this.dirTree);
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
             this.splitContainer1.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.splitContainer1.Panel1MinSize = 1;
             // 
@@ -265,6 +271,26 @@
             this.splitContainer1.SplitterWidth = 1;
             this.splitContainer1.TabIndex = 4;
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.dirTree);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.openFileList);
+            this.splitContainer2.Size = new System.Drawing.Size(112, 418);
+            this.splitContainer2.SplitterDistance = 215;
+            this.splitContainer2.SplitterWidth = 1;
+            this.splitContainer2.TabIndex = 5;
+            // 
             // dirTree
             // 
             this.dirTree.AllowDrop = true;
@@ -275,14 +301,26 @@
             this.dirTree.Indent = 10;
             this.dirTree.Location = new System.Drawing.Point(0, 0);
             this.dirTree.Name = "dirTree";
-            this.dirTree.Size = new System.Drawing.Size(112, 418);
+            this.dirTree.Size = new System.Drawing.Size(112, 215);
             this.dirTree.TabIndex = 3;
             this.dirTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.dirTree_Click);
             this.dirTree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.dirTree_DoubleClick);
             // 
+            // openFileList
+            // 
+            this.openFileList.DisplayMember = "name";
+            this.openFileList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.openFileList.ItemHeight = 12;
+            this.openFileList.Location = new System.Drawing.Point(0, 0);
+            this.openFileList.Name = "openFileList";
+            this.openFileList.Size = new System.Drawing.Size(112, 202);
+            this.openFileList.TabIndex = 0;
+            this.openFileList.ValueMember = "path";
+            // 
             // codeTabControl
             // 
             this.codeTabControl.AllowDrop = true;
+            this.codeTabControl.ClosingCodeTabPage = null;
             this.codeTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.codeTabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             this.codeTabControl.Location = new System.Drawing.Point(0, 0);
@@ -295,8 +333,6 @@
             this.codeTabControl.TabIndex = 1;
             this.codeTabControl.TabStop = false;
             this.codeTabControl.TabIndexChanged += new System.EventHandler(this.codeTabControl_TabIndexChanged);
-            this.codeTabControl.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.codeTabControl_ControlAdded);
-            this.codeTabControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.codeTabControl_MouseClick);
             // 
             // Form1
             // 
@@ -319,6 +355,10 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -349,6 +389,8 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hIdeSideBarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private Gui.OpenFileList openFileList;
         
 
 
